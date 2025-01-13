@@ -11,7 +11,7 @@ set -euo pipefail
 STATE_FILE="/tmp/k8s_worker_install_state"
 
 # 설치할 컴포넌트 버전
-KUBE_VERSION="v1.31 (stable)"
+KUBE_VERSION="v1.32"
 CALICO_VERSION="v3.28.1"
 
 ###############################################################################
@@ -88,7 +88,7 @@ function run_step() {
 
 echo "###############################################################################"
 echo " 이 스크립트는 다음 구성 요소를 설치/초기화합니다."
-echo " - Kubernetes $KUBE_VERSION"
+echo " - Kubernetes $KUBE_VERSION (Stable)"
 echo " - containerd (현재 시스템 아키텍처 자동 감지)"
 echo " - Calico $CALICO_VERSION (CNI)"
 echo "###############################################################################"
@@ -213,13 +213,13 @@ run_step "STEP_08" "[${ARCH}] containerd 설정 및 설치" "
 run_step "STEP_09" "Kubernetes apt-key 추가" "
   if [ ! -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg ]; then
     mkdir -p /etc/apt/keyrings
-    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | gpg --dearmor | sudo tee /etc/apt/keyrings/kubernetes-apt-keyring.gpg > /dev/null
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/$KUBE_VERSION/deb/Release.key | gpg --dearmor | sudo tee /etc/apt/keyrings/kubernetes-apt-keyring.gpg > /dev/null
   fi
 "
 
 # Step 10. Kubernetes APT 저장소 추가
 run_step "STEP_10" "Kubernetes APT 저장소 추가" "
-  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
+  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/$KUBE_VERSION/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
   apt-get update -y
 "
 
